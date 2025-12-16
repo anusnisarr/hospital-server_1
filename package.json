@@ -5,13 +5,14 @@
   "type": "module",
   "scripts": {
     "backend": "nodemon index.js",
-      "start": "node index.js"
+    "start": "node index.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "cookie-parser": "^1.4.7",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
     "socket.io": "^4.8.1"
