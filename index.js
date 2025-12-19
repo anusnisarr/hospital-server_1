@@ -13,10 +13,23 @@ import { Server } from "socket.io";
 
 const app = express();
 
-app.use(cors({
-  origin: "http://localhost:5173", // your frontend URL
-  credentials: true               // must allow credentials
-}));
+app.use(
+  cors({
+    origin: (origin, cb) => {
+      const whitelist = [
+        "https://clinic-management-awn6.onrender.com",
+        "https://hospital-management-3y1x.onrender.com",
+        "http://localhost:5173"
+      ];
+      if (!origin || whitelist.includes(origin)) {
+        cb(null, true);
+      } else {
+        cb(new Error("CORS blocked"));
+      }
+    },
+    credentials: true
+  })
+);
 
 app.use(cookieParser());
 app.use(express.json());
