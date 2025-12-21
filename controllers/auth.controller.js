@@ -20,29 +20,22 @@ const hashRefreshToken = (token) => {
 };
 
 export const refreshToken = async (req, res) => {
+  console.log("refreshToken" , req.cookies);
   try {
     const refreshToken = req.cookies.refreshToken;
+    
 
     if (!refreshToken)
       return res.status(401).json({ message: "No refresh token" });
 
-    const hashedRefreshToken = crypto
-    .createHash("sha256")
-    .update(refreshToken)
-    .digest("hex");
-    
     const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
 
-    const user = await User.findById(decoded.id).select("+refreshToken");
+    const user = await User.findById(decoded.id);
     if (!user) return res.status(401).json({ message: "User not found" });
-
-    if ( user.refreshToken !== hashedRefreshToken ) {
-      return res.status(403).json({ message: "Token mismatch" });
-    }
 
     const newAccessToken = generateAccessToken({ id: user._id });
 
-    res.json({
+    return res.status(200).json({
       message: "Login successful",
       accessToken: newAccessToken,
       user: {
@@ -128,9 +121,6 @@ export const login = async (req, res) => {
 
     const accessToken = generateAccessToken({ id: user._id });
     const refreshToken = generateRefreshToken({ id: user._id });
-
-    user.refreshToken = hashRefreshToken(refreshToken);
-    await user.save();
   
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
@@ -139,21 +129,21 @@ export const login = async (req, res) => {
       maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
     });
 
-    res.cookie("accessToken", accessToken, {
-      httpOnly: true,
-      secure: false,
-      sameSite: "lax",
-      maxAge: 0 * 0 * 15 * 60 * 1000 
-    });
+    // res.cookie("accessToken", accessToken, {
+    //   httpOnly: true,
+    //   secure: false,
+    //   sameSite: "lax",
+    //   maxAge: 0 * 0 * 15 * 60 * 1000 
+    // });
 
-    res.json({
+    return res.status(200).json({
       message: "Login successful",
       user: {
         id: user._id,
         name: user.name,
         email: user.email,
       },
-      accessToken,
+      accessToken
     });
 
   } catch (err) {
