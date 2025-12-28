@@ -256,8 +256,6 @@ export const getAllPatient = async (req, res) => {
         const total = result[0].metadata[0]?.total || 0;
         const data = result[0].data || [];
 
-        console.log('✅ Result:', data, 'Total:', total);
-
         res.status(200).json({
             success: true,
             data: data,
@@ -302,8 +300,6 @@ export const insertNewVisit = async (req, res) => {
         const response = await Visit.create({...visitData , patient: patientId})
         
         const newVisit = await response.populate("patient")
-
-        console.log(newVisit);
         
         res.status(201).json(newVisit);
         
@@ -329,10 +325,7 @@ export const updatePatientInfo = async (req, res) => {
 }
 
 export const updateVisitDetails = async (req, res) => {
-    const { id , status } = req.query
-    
-    console.log("status" , status , "id" , id);
-    
+    const { id , status } = req.query    
 
     // try {
     //     const updatedPatient = await Patient.findByIdAndUpdate(id, patientData  , {new: true})
@@ -352,8 +345,6 @@ export const updateMedicalHistory = async (req, res) => {
         const patient = await Patient.findByIdAndUpdate(id, { $set: { medicalHistory: req.body } })
 
         res.status(201).json(patient);
-        console.log(patient);
-
 
     } catch (error) {
         res.status(400).json({ error: error.message });
