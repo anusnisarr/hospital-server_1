@@ -78,6 +78,29 @@ export const getTodayVisit = async (req, res) => {
 
 };
 
+export const getAllTodayVisit = async (req, res) => {
+    
+    try {
+
+        const today = new Date();
+
+        const startOfDay = new Date(today.setHours(0, 0, 0, 0));
+        
+        const endOfDay = new Date(new Date().setHours(23, 59, 59, 999));
+
+        const getTodayVisits = await Visit.find({
+        updatedAt: { $gte: startOfDay, $lte: endOfDay }
+        }).populate("patient");
+
+        return res.status(200).json(getTodayVisits);
+
+    } catch (err) {
+        console.error("getTodayPatients error:", err.message);
+        return res.status(500).json({ error: "Server error" , message: err.message});
+    }
+
+}
+
 export const getAllVisits = async (req, res) => {
     const {
         search,
