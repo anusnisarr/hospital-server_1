@@ -4,7 +4,6 @@ import { visitSearchQuery } from "../utils/buildSearchQuery.js";
 
 export const getTodayVisit = async (req, res) => {
     const {
-        getAllData=false,
         search,
         page = 1,
         pageSize = 50,
