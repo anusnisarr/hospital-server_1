@@ -51,7 +51,7 @@ export const refreshToken = async (req, res) => {
 
 export const register = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password } = req.body;    
 
     if (!name || !email || !password) {
       return res.status(400).json({ message: "All fields are required" });
@@ -64,18 +64,14 @@ export const register = async (req, res) => {
 
     const hashed = await bcrypt.hash(password, 10);
 
-    const refreshToken = generateRefreshToken({ id: user._id });
-    const accessToken = generateAccessToken({ id: user._id });
-
-
-    const hashedToken = hashRefreshToken(refreshToken);
-
     const user = await User.create({
       name,
       email,
       password: hashed,
-      refreshToken: hashedToken
     });
+
+    const refreshToken = generateRefreshToken({ id: user._id });
+    const accessToken = generateAccessToken({ id: user._id });
 
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
