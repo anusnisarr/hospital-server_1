@@ -13,13 +13,14 @@ import { Server } from "socket.io";
 
 const app = express();
 
+const whitelist = [
+  "https://hospital-management-3y1x.onrender.com",
+  "http://localhost:5173"
+];
+
 app.use(
   cors({
     origin: (origin, cb) => {
-      const whitelist = [
-        "https://hospital-management-3y1x.onrender.com",
-        "http://localhost:5173"
-      ];
       if (!origin || whitelist.includes(origin)) {
         cb(null, true);
       } else {
@@ -38,7 +39,7 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:5173",
+    origin: whitelist,
     credentials: true
   }
 });

@@ -11,8 +11,8 @@ router.get('/AllTodayVisits' , authenticateToken, getAllTodayVisit)
 router.post('/registerPatientAndVisit' , authenticateToken , registerPatientAndVisit)
 router.post('/newVisit' , authenticateToken , insertNewVisit)
 router.patch('/updateMedicalHistory/:_id' ,authenticateToken, updateMedicalHistory)
-router.patch('/update' , authenticateToken , updateVisitDetails)
-router.delete('/Delete' ,authenticateToken , deleteAllVisits)
+router.patch('/updateVisitDetails' , authenticateToken , updateVisitDetails)
+router.delete('/Delete' , authenticateToken , deleteAllVisits)
 
 
 
