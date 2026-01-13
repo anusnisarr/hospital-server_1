@@ -1,12 +1,12 @@
 export const VISIT_STATUS = {
-  PENDING: "pending",
-  IN_PROGRESS: "in-progress",
-  HOLD: "hold",
-  COMPLETED: "completed"
+  PENDING: "Pending",
+  IN_CONSULTATION: "In Consultation",
+  HOLD: "Hold",
+  COMPLETED: "Completed"
 };
 
 export const VISIT_PRIORITY = {
-  NORMAL: "normal",
-  URGENT: "urgent",
-  EMERGENCY: "emergency"
+  NORMAL: "Normal",
+  URGENT: "Urgent",
+  EMERGENCY: "Emergency"
 };
