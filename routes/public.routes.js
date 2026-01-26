@@ -8,7 +8,7 @@ const router = express.Router();
 router.post('/login' , login)
 router.post('/logout' , logout)
 router.post('/createUser' , createUser)
-router.post('/createUser', registerTenant);
+router.post('/register', registerTenant);
 router.get('/check-slug/:slug', checkSlugAvailability);
 
 export default router;

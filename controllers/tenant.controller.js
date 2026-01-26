@@ -1,17 +1,16 @@
-// import Tenant from '../models/Tenant.js';
-// import User from '../models/User.js';
+// controllers/tenant.controller.js
+import Tenant from '../models/tenant.models.js';
+import User from '../models/user.models.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-// import { generateUniqueSlug, isValidSlug } from '../utils/slugGenerator.js';
+import { generateUniqueSlug, isValidSlug } from '../utils/slugGenerator.js';
 
-/**
- * Register new tenant (clinic/hospital)
- */
+// Register new tenant (clinic/hospital)
 export const registerTenant = async (req, res) => {
   try {
     const {
       businessName,
-      email,
+      businessEmail,
       phone,
       address,
       businessType,
@@ -20,31 +19,30 @@ export const registerTenant = async (req, res) => {
       adminPassword
     } = req.body;
 
-    // Validation
-    if (!businessName || !email || !adminName || !adminEmail || !adminPassword) {
+    console.log(req.body);
+    
+
+    if (!businessName || !businessEmail || !adminName || !adminEmail || !adminPassword) {
       return res.status(400).json({
         success: false,
         message: 'All required fields must be provided'
       });
     }
 
-    // Check if tenant email already exists
-    const existingTenant = await Tenant.findOne({ email });
+    const existingTenant = await Tenant.findOne({ businessEmail });
     if (existingTenant) {
       return res.status(400).json({
         success: false,
-        message: 'A tenant with this email already exists'
+        message: 'A tenant with this businessEmail already exists'
       });
     }
 
-    // Generate unique slug
     const slug = await generateUniqueSlug(businessName, Tenant);
 
-    // Create tenant
     const tenant = await Tenant.create({
       businessName,
       slug,
-      email,
+      businessEmail,
       phone,
       address,
       businessType: businessType || 'clinic',
@@ -52,6 +50,7 @@ export const registerTenant = async (req, res) => {
       subscriptionStatus: 'trial'
     });
 
+     console.log('Created Tenant:', tenant);
     // Create admin user
     const hashedPassword = await bcrypt.hash(adminPassword, 10);
     
@@ -60,24 +59,12 @@ export const registerTenant = async (req, res) => {
       fullName: adminName,
       email: adminEmail,
       password: hashedPassword,
-      role: 'admin',
       status: 'active'
     });
 
     // Link admin user to tenant
     tenant.adminUser = adminUser._id;
     await tenant.save();
-
-    // Generate JWT token
-    const token = jwt.sign(
-      { 
-        userId: adminUser._id,
-        tenantId: tenant._id,
-        role: adminUser.role
-      },
-      process.env.JWT_SECRET,
-      { expiresIn: '7d' }
-    );
 
     res.status(201).json({
       success: true,
@@ -91,11 +78,10 @@ export const registerTenant = async (req, res) => {
         },
         user: {
           id: adminUser._id,
-          name: adminUser.fullName,
+          fullName: adminUser.fullName,
           email: adminUser.email,
           role: adminUser.role
-        },
-        token
+        }
       }
     });
 
@@ -109,12 +95,11 @@ export const registerTenant = async (req, res) => {
   }
 };
 
-/**
- * Check slug availability
- */
+// Check slug availability
 export const checkSlugAvailability = async (req, res) => {
   try {
     const { slug } = req.params;
+    console.log('Checking slug:', slug);
 
     if (!isValidSlug(slug)) {
       return res.status(400).json({
@@ -139,9 +124,7 @@ export const checkSlugAvailability = async (req, res) => {
   }
 };
 
-/**
- * Get tenant details
- */
+// Get tenant details
 export const getTenantDetails = async (req, res) => {
   try {
     const tenant = await Tenant.findById(req.tenantId)
@@ -161,9 +144,7 @@ export const getTenantDetails = async (req, res) => {
   }
 };
 
-/**
- * Update tenant settings
- */
+// Update tenant settings
 export const updateTenant = async (req, res) => {
   try {
     const { businessName, phone, address, settings } = req.body;

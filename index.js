@@ -1,12 +1,11 @@
 import express from 'express'
 import 'dotenv/config'
 import connectDB from './config/db.js'
-import patientRouter from './routes/patient.routes.js';
-import visitRouter from './routes/visit.routes.js';
+import patientRoutes from './routes/patient.routes.js';
+import visitRoutes from './routes/visit.routes.js';
 import AuthRouter from './routes/auth.routes.js';
 import publicRoutes from './routes/public.routes.js';
-// import tenantRoutes from './routes/tenant.routes.js';
-// import patientRoutes from './routes/patient.routes.js';
+import tenantRoutes from './routes/tenant.routes.js';
 
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
@@ -66,12 +65,12 @@ io.on("connection", (socket) => {
 
 });
 
-
 app.use('/public' , publicRoutes)
-app.use('/visit' , visitRouter)
-app.use('/patient' , patientRouter)
 app.use('/auth' , AuthRouter)
-// app.use('/api' , patientRouter)
+app.use('/:tenantSlug/tenant', tenantRoutes);
+app.use('/:tenantSlug/patients', patientRoutes);
+app.use('/:tenantSlug/visits', visitRoutes);
+
 
 const startServer = async () => {
     await connectDB()

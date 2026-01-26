@@ -22,8 +22,20 @@ const medicalHistorySchema = mongoose.Schema({
 
 const patientVisitSchema = mongoose.Schema({
 
-    patient : {type: mongoose.Schema.Types.ObjectId, ref: "Patient"},
-    tokenNo: {type: String},
+    tenant: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Tenant',
+        required: true,
+        index: true
+    },
+    patient: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Patient',
+        required: true
+    },
+    tokenNo: {
+        type: String
+    },
     registrationDate : {type: Date},
     appointmentType : {type: String},
     priority : {
@@ -40,9 +52,21 @@ const patientVisitSchema = mongoose.Schema({
         status: String,
         changedAt: Date
     }],
-    medicalHistory : [medicalHistorySchema]
+    medicalHistory : [medicalHistorySchema],
+    medicines: [{
+      name: String,
+      dosage: String,
+      frequency: String,
+      duration: String
+    }],
+    notes: String,
+    attachments: [String]
         
 }, { timestamps: true })
+
+patientVisitSchema.index({ tenant: 1, registrationDate: -1 });
+patientVisitSchema.index({ tenant: 1, patient: 1 });
+patientVisitSchema.index({ tenant: 1, status: 1 });
 
 const PatientVisit = mongoose.model("PatientVisit" , patientVisitSchema)
 
